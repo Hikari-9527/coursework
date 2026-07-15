@@ -3,3 +3,8 @@ target/
 
 # 环境变量（含密钥）
 .env
+
+# Codex产物
+.agents/
+.audit-target/
+.audit-target-final/

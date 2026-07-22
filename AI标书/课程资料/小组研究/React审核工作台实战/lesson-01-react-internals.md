@@ -142,7 +142,18 @@ useEffect(() => {
 
 ### 任务 1：Fiber 树遍历
 
-用 `__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED`（仅学习用）遍历 React 根节点的 Fiber 树，打印关键字段。对比 DevTools 验证。
+**入口说明**：React 在两处暴露了内部调试入口——
+
+| 入口 | 来源 | 能拿到什么 |
+|------|------|-----------|
+| DOM 元素上的 `__reactContainer$` | `react-dom` 渲染时挂在容器 DOM 上 | Fiber 树根节点（`stateNode.current`） |
+| `__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE`（React 18 旧名 `__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED`） | `react` 模块导出 | Hooks 调度器、渲染内部状态 |
+
+> **注意**：React 19 中 `__SECRET_INTERNALS` 已重命名为 `__CLIENT_INTERNALS`，且其内容为 Hooks 调度器等运行时状态，**不直接包含 Fiber 树**。遍历 Fiber 树请走 DOM 入口。
+
+**要求**：通过 DOM 元素上的 `__reactContainer$` → `stateNode.current` 拿到 Fiber 树根节点，递归遍历打印关键字段（`tag`、`type`、`child`/`sibling`/`return` 指针、`memoizedState` Hooks 链表、`alternate` 双缓冲指针、`stateNode` DOM 引用）。对比 DevTools 验证。
+
+**额外探索**（选做）：在 `main.tsx` 中引入 `__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE` 挂到 `window` 上，在控制台观察 `H`（Hooks 调度器）在渲染期与非渲染期的差异。
 
 ### 任务 2：闭包陷阱实验室
 
@@ -156,7 +167,8 @@ useEffect(() => {
 
 ## 验收标准
 
-- [ ] Fiber 遍历器正确输出树结构
+- [ ] Fiber 遍历器正确输出树结构（通过 `__reactContainer$` DOM 入口）
+- [ ] 理解 `__CLIENT_INTERNALS` 与 Fiber 树的区别（一个给 Hooks 调度器，一个给树结构）
 - [ ] 3 个闭包陷阱全部修复 + 根因分析
 - [ ] React 19 新特性示例可运行
 
